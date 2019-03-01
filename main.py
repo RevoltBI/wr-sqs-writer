@@ -77,7 +77,6 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
                         export_value = float(current_data)
 
                 if type == "array":
-                    print(current_data)
                     temp_data = json.loads(current_data)
                     temp_array = []
 

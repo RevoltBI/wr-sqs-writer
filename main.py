@@ -60,8 +60,10 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
                     export_value = str(current_data)
 
                 if type == "object":
+                    data = json.loads(current_data)
+
                     export_value = {
-                        'id': int(current_data)
+                        'id': int(data['id'])
                     }
 
                 if type == "number":

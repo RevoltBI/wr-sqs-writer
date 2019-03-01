@@ -44,7 +44,7 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
         data = {}
 
         for key, value in columns.items():
-            current_data = "null"
+            current_data = None
             type = value['type']
             format = value['format']
 
@@ -60,11 +60,14 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
                     export_value = str(current_data)
 
                 if type == "object":
-                    data = json.loads(current_data)
+                    try:
+                        temp_data = json.loads(current_data)
 
-                    export_value = {
-                        'id': int(data['id'])
-                    }
+                        export_value = {
+                            'id': int(temp_data['id'])
+                        }
+                    except:
+                        export_value = {}
 
                 if type == "number":
                     if format == "integer":
@@ -72,6 +75,16 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
 
                     if format == "float":
                         export_value = float(current_data)
+
+                if type == "array":
+                    print(current_data)
+                    temp_data = json.loads(current_data)
+                    temp_array = []
+
+                    for value in temp_data:
+                        temp_array.append(value)
+
+                    export_value = temp_array
 
                 data[key] = export_value
 

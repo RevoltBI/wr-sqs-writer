@@ -37,6 +37,8 @@ with open(parameters['INPUT_FORMAT'], mode='rt', encoding='utf-8') as in_file:
             'format': row['format_info']
         }
 
+print(columns)
+
 with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
     lazy_lines = (line.replace('\0', '') for line in in_file)
     reader = csv.DictReader(lazy_lines, lineterminator=csvlt, delimiter=csvdel, quotechar=csvquo)
@@ -58,8 +60,8 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
                 if value['type'] == "object":
                     current_data = json.loads(row[data[key]])
                     data[key] = json.dumps(row[data[key]])
-            except:
-                print('Missing column')
+            except Exception, e:
+                print str(e)
 
         message = json.dumps(data)
 
@@ -71,5 +73,7 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
         #    sqs_conn.send_message(queue=queue, message_content=message)
         #except:
         #    print("Failed to push message")
+
+print('v 1.0')
 
 print("Job done!")

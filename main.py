@@ -25,20 +25,51 @@ csvlt = '\n'
 csvdel = ','
 csvquo = '"'
 
+columns = {}
+
+with open(parameters['INPUT_FORMAT'], mode='rt', encoding='utf-8') as in_file:
+    lazy_lines = (line.replace('\0', '') for line in in_file)
+    reader = csv.DictReader(lazy_lines, lineterminator=csvlt, delimiter=csvdel, quotechar=csvquo)
+
+    for row in reader:
+        columns[row['standard_attribute_name']] = {
+            'type': row['json_value_type'],
+            'format': row['format_info']
+        }
+
 with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
     lazy_lines = (line.replace('\0', '') for line in in_file)
     reader = csv.DictReader(lazy_lines, lineterminator=csvlt, delimiter=csvdel, quotechar=csvquo)
     for row in reader:
         data = {}
 
-        for key, value in row.items():
-            data[key] = value
+        for key, value in columns.items():
+            try:
+                if value['type'] == "string":
+                    data[key] = string(row[data[key]])
+
+                if value['type'] == "number":
+                    if value['format'] == "integer":
+                        data[key] = string(row[data[key]])
+
+                    if value['format'] == "float":
+                        data[key] = float(row[data[key]])
+
+                if value['type'] == "object":
+                    current_data = json.loads(row[data[key]])
+                    data[key] = json.dumps(row[data[key]])
+            except:
+                print('Missing column')
 
         message = json.dumps(data)
 
-        try:
-            sqs_conn.send_message(queue=queue, message_content=message)
-        except:
-            print("Failed to push message")
+        print(message)
+
+        break
+
+        #try:
+        #    sqs_conn.send_message(queue=queue, message_content=message)
+        #except:
+        #    print("Failed to push message")
 
 print("Job done!")

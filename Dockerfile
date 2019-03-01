@@ -1,8 +1,7 @@
 FROM quay.io/keboola/docker-custom-python:latest
 
-RUN pip install boto
-
 COPY . /code/
 WORKDIR /data/
 
+RUN pip install boto
 CMD ["python", "-u", "/code/main.py"]

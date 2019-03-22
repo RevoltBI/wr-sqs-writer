@@ -67,7 +67,11 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
                             'id': int(temp_data['id'])
                         }
                     except:
-                        export_value = {}
+                        try:
+                            temp_data = json.loads(current_data)
+                            export_value = temp_data
+                        except:
+                            export_value = {}
 
                 if type == "number":
                     if format == "integer":

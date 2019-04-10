@@ -3,8 +3,6 @@ import json
 import boto.sqs
 from keboola import docker
 
-import sys
-
 cfg = docker.Config('/data/')
 parameters = cfg.get_parameters()
 

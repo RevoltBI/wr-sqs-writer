@@ -1,10 +1,21 @@
 import csv
 import json
 import boto.sqs
-from keboola import docker
+#from keboola import docker
 
-cfg = docker.Config('/data/')
-parameters = cfg.get_parameters()
+import sys
+
+#cfg = docker.Config('/data/')
+#parameters = cfg.get_parameters()
+
+parameters = {
+  "SQS_AWS_REGION": "eu-central-1",
+  "SQS_AWS_ACCESS_KEY_ID": "AKIAIPEVQZRR5OOGPZWA",
+  "SQS_AWS_SECRET_ACCESS_KEY": "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",
+  "SQS_AWS_QUEUE_NAME": "carvago-dev-revolt-queue",
+  "INPUT": "data/in/tables/source.csv",
+  "INPUT_FORMAT": "data/in/tables/structure.csv"
+}
 
 print("Starting process...")
 
@@ -51,9 +62,26 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
             try:
                 current_data = row[key]
             except:
-                continue
+                if type != "boolean":
+                    continue
 
             export_value = None
+
+            if type == "boolean":
+                export_value = "false"
+
+                try:
+                    current_data = row[key]
+                except:
+                    if type != "boolean":
+                        continue
+
+                if current_data:
+                    export_value = str(current_data)
+
+                data[key] = export_value
+
+                continue
 
             if current_data:
                 if type == "string":
@@ -95,8 +123,12 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
 
         message = json.dumps(data)
 
+        print(message)
+        sys.exit(0)
+
         try:
-            sqs_conn.send_message(queue=queue, message_content=message)
+            #sqs_conn.send_message(queue=queue, message_content=message)
+            print("pic")
         except:
             print("Failed to push message")
 

@@ -57,7 +57,7 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
             export_value = None
 
             if type == "boolean":
-                export_value = "false"
+                export_value = False
 
                 try:
                     current_data = row[key]
@@ -66,7 +66,8 @@ with open(parameters['INPUT'], mode='rt', encoding='utf-8') as in_file:
                         continue
 
                 if current_data:
-                    export_value = str(current_data)
+                    if current_data == "true":
+                        export_value = True
 
                 data[key] = export_value
 
